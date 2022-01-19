@@ -23,16 +23,16 @@ const theme = createTheme();
 export default function Login() {
     const emailRef = useRef();
     const passwordRef = useRef();
-    var error ='';
+    var error = '';
     const [loading, setLoading] = useState(false);
-    const { login,currentUser } = useAuth();
+    const { login, currentUser } = useAuth();
     const history = useHistory();
     async function handleSubmit(e) {
         e.preventDefault();
         setLoading(true);
         try {
-            await login(emailRef.current.value, passwordRef.current.value) 
-            history.push('/dashboard') 
+            await login(emailRef.current.value, passwordRef.current.value)
+            history.push('/student-dashboard')
         } catch (e) {
             alert("Failed to login")
             console.log(e)

@@ -16,7 +16,7 @@ import Card from '@mui/material/Card';
 import TextField from '@mui/material/TextField';
 import firebase from "../firebase";
 import { useAuth } from "../contexts/AuthContext";
-import copy from "copy-to-clipboard";  
+import copy from "copy-to-clipboard";
 var CryptoJS = require("crypto-js");
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -30,7 +30,7 @@ const Item = styled(Paper)(({ theme }) => ({
 export default function Dashboard() {
     const history = useHistory()
     const { logout, currentUser } = useAuth();
-    const [details,setDetails] = useState({});
+    const [details, setDetails] = useState({});
     const [Display, setDisplay] = useState(false);
     const [createTest, setcreateTest] = useState(false);
     const test_name = useRef();
@@ -48,16 +48,16 @@ export default function Dashboard() {
             setDetails(data)
             setDisplay(true);
         })
-        
+
     }
     const scheduleTest = () => {
         setcreateTest(true)
-    } 
+    }
 
     const draftTest = () => {
         const d = Date.now();
-        const testRef = firebase.database().ref('Organizations/' + currentUser.uid + '/Tests')
-        var ciphertext = CryptoJS.AES.encrypt(testRef+'/'+d, 'my-secret-key@123').toString();
+        const testRef = firebase.database().ref('Organizations/' + currentUser.uid + '/Tests');
+        var ciphertext = CryptoJS.AES.encrypt('Organizations/' + currentUser.uid + '/Tests' + '/' + d, 'my-secret-key@123').toString();
         const test_data = {
             test_name: test_name.current.value,
             test_format: test_format.current.value,
@@ -71,15 +71,15 @@ export default function Dashboard() {
         console.log(ciphertext)
         var bytes = CryptoJS.AES.decrypt(ciphertext, 'my-secret-key@123');
         console.log(bytes.toString(CryptoJS.enc.Utf8))
-        testRef.push(test_data);
+        testRef.child(d).set(test_data);
         setcreateTest(false)
     }
 
-    async function leave(){
-        try{
+    async function leave() {
+        try {
             await logout();
             history.push('/')
-        }catch(e){
+        } catch (e) {
             alert('Failed to Logout')
             console.log(e)
         }
@@ -90,8 +90,8 @@ export default function Dashboard() {
     }, []);
 
     return (
-        <> 
-                <AppBar position="static" style={{ backgroundColor: "black" }}>
+        <>
+            <AppBar position="static" style={{ backgroundColor: "black" }}>
                 <Container maxWidth="xl">
                     <Toolbar disableGutters>
                         <Typography
@@ -115,9 +115,9 @@ export default function Dashboard() {
                         </Box>
                         <Box sx={{ flexGrow: 0 }} >
                             <Tooltip title="Schedule a test">
-                            <Button variant="contained" style={{ backgroundColor: "#6062ff" }} onClick={scheduleTest}>Schedule a test</Button>
+                                <Button variant="contained" style={{ backgroundColor: "#6062ff" }} onClick={scheduleTest}>Schedule a test</Button>
                             </Tooltip>
-                        </Box>  
+                        </Box>
                         <Box sx={{ flexGrow: 0 }}>
                             <Tooltip title="Logout">
                                 <Button variant="contained" style={{ backgroundColor: "#6062ff", margin: "10%" }} onClick={leave}>Logout</Button>
@@ -135,15 +135,15 @@ export default function Dashboard() {
                         <Typography variant="h2" component="h2" style={{ color: "white" }}>
                             &nbsp; &nbsp;Tests Scheduled
                         </Typography>
-                        {Display && details.Tests && 
-                        Object.values(details.Tests).map((k,v) => {
-                            return <>
-                            <Card sx={{ maxWidth: 500 }} style={{margin: "6%", padding: "2%"}}>
-                                 <Typography variant="h4" component="h4" style={{ color: "black" }}>&nbsp; {k.test_name}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i style={{color: "grey", fontSize: "70%"}}>{k.test_date}</i></Typography>
-                                 &nbsp;&nbsp; <Button variant="contained" onClick={() => copy(k.test_key)}>Copy Test Link</Button>
-                            </Card>
-                            </>                   
-                        })
+                        {Display && details.Tests &&
+                            Object.values(details.Tests).map((k, v) => {
+                                return <>
+                                    <Card sx={{ maxWidth: 500 }} style={{ margin: "6%", padding: "2%" }}>
+                                        <Typography variant="h4" component="h4" style={{ color: "black" }}>&nbsp; {k.test_name}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i style={{ color: "grey", fontSize: "70%" }}>{k.test_date}</i></Typography>
+                                        &nbsp;&nbsp; <Button variant="contained" onClick={() => copy(k.test_key)}>Copy Test Link</Button>
+                                    </Card>
+                                </>
+                            })
                         }
                     </Grid>
                     <Grid item xs={6}>
