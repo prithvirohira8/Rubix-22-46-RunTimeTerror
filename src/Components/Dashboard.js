@@ -17,6 +17,7 @@ import TextField from '@mui/material/TextField';
 import firebase from "../firebase";
 import { useAuth } from "../contexts/AuthContext";
 import copy from "copy-to-clipboard";
+import Footer from '../Footer';
 var CryptoJS = require("crypto-js");
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -179,6 +180,7 @@ export default function Dashboard() {
                     </Grid>
                 </Grid>
             </Box>
+            <Footer />
         </>
     )
 }

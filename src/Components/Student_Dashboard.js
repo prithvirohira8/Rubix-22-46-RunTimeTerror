@@ -16,30 +16,26 @@ import Card from '@mui/material/Card';
 import TextField from '@mui/material/TextField';
 import firebase from "../firebase";
 import { useAuth } from "../contexts/AuthContext";
-import Webcam from 'react-webcam';
+import emailjs from '@emailjs/browser';
+import Footer from '../Footer';
 var CryptoJS = require("crypto-js");
-
-const Item = styled(Paper)(({ theme }) => ({
-    ...theme.typography.body2,
-    padding: theme.spacing(1),
-    textAlign: 'center',
-    color: theme.palette.text.secondary,
-}));
-
 
 export default function Student_Dashboard() {
     const history = useHistory()
     const testCode = useRef();
     const [examdetails, setexamdetails] = useState(null);
     const [details, setDetails] = useState();
-    const [display, setDisplay] = useState(false);
+    const [photo, setPhoto] = useState();
+    const [displayform, setDisplayform] = useState(true);
     const { logout, currentUser } = useAuth();
     async function getDetails() {
         var student_details = firebase.database().ref('Students/' + currentUser.uid);
         await student_details.on('value', (snapshot) => {
             setDetails(snapshot.val())
             console.log(snapshot.val())
-            setDisplay(true);
+            const img_b = snapshot.val().Photo
+            console.log(img_b);
+            setPhoto(img_b)
         })
     }
     async function leave() {
@@ -57,13 +53,12 @@ export default function Student_Dashboard() {
         var bytes = CryptoJS.AES.decrypt(code, 'my-secret-key@123');
         console.log(bytes.toString(CryptoJS.enc.Utf8))
         var ref = firebase.database().ref(bytes.toString(CryptoJS.enc.Utf8));
-
-
         try {
             ref.on('value', (snap) => {
                 const data = snap.val();
                 alert("Read the Instruction carefully")
                 setexamdetails(data);
+                setDisplayform(false)
             })
         } catch (error) {
             alert("Invalid test code")
@@ -81,7 +76,6 @@ export default function Student_Dashboard() {
             studentref: currentUser.uid,
             testref: bytes.toString(CryptoJS.enc.Utf8)
         }
-
         fetch("http://localhost:4000/post", {
             method: "POST",
             headers: {
@@ -94,7 +88,22 @@ export default function Student_Dashboard() {
             window.location.assign('http://localhost:4000/face')
         })
     }
-
+    const notifyMe = () => {
+      const obj = {
+          test_name: examdetails.test_name,
+          test_time: examdetails.test_time,
+          test_date: examdetails.test_date,
+          test_duration: examdetails.test_duration,
+          test_key: examdetails.test_key,
+          user_name: details.Student_Name,
+          user_email: details.Email
+      }
+      emailjs.send('service_3zd807n', 'template_z0wuz5m',obj, 'user_0nQqZkKHNAxpAJBXyIs7O').then((result) => {
+          console.log(result.text);
+      }, (error) => {
+          console.log(error.text);
+      });
+    }
     useEffect(() => {
         getDetails();
     }, []);
@@ -131,32 +140,70 @@ export default function Student_Dashboard() {
             <Box sx={{ flexGrow: 1 }}>
                 <Grid container spacing={2}>
                     <Grid item xs={6}>
-                        <br /><br /><br />
-                        {examdetails && <Typography variant="h2" component="h2" style={{ color: "white" }}>
-                            &nbsp; &nbsp;Test details<br /><br />
-                            &nbsp; &nbsp;Test name : {examdetails.test_name}
-                            &nbsp; &nbsp;Duration : {examdetails.test_duration} minutes
-                            &nbsp; &nbsp;{examdetails.test_time}
-                            &nbsp; &nbsp;Instructions<br /><br />
-                        </Typography>}
-                        {!examdetails && <Typography variant="h2" component="h2" style={{ color: "white" }}>
-                            &nbsp; &nbsp; Hey! {display && details.Student_Name}
-                        </Typography>}
+                        <br />
+                        {examdetails && <>
+                        <Card sx={{ maxWidth: 500 }} style={{ padding: "1.5rem" }} style={{margin: "2%",padding: "2%"}}>
+                            <Typography variant="h3" component="h3" style={{ color: "#141718" }}>
+                                 <b>Test Details</b>
+                            </Typography>
+                            <br />
+                            <Typography variant="h5" component="h5" style={{ color: "#141718" }}>
+                                 Test Name: {examdetails.test_name} 
+                            </Typography>
+                            <br />
+                            <Typography variant="h5" component="h5" style={{ color: "#141718" }}>
+                                 Test Date: {examdetails.test_date}
+                            </Typography>
+                            <br />
+                            <Typography variant="h5" component="h5" style={{ color: "#141718" }}>
+                                 Test Time: {examdetails.test_time}
+                            </Typography>
+                            <br />
+                            <Typography variant="h5" component="h5" style={{ color: "#141718" }}>
+                                 Test Duration : <b style={{ color: "#ffbf00" }}>{examdetails.test_duration} minutes</b>.
+                            </Typography>
+                            <Button variant="contained" style={{ backgroundColor: "#6062ff", margin: "1%" }} onClick={notifyMe} >Notify Me</Button>
+                            <br /><br />
+                            <Typography variant="h3" component="h3" style={{ color: "#141718" }}>
+                                 <b>Instructions</b>
+                            </Typography>
+                            <br />1. You must use a functioning webcam and microphone
+                            <br />2. No cell phones or other secondary devices in the room or test area
+                            <br />3. Your desk/table must be clear or any materials except your test-taking device
+                            <br />4. No one else can be in the room with you
+                            <br />5. No talking 
+                            <br />6. The testing room must be well-lit and you must be clearly visible
+                            <br />7. No dual screens/monitors
+                            <br />8. Do not leave the camera 
+                            <br />9. No use of additional applications or internet
+                            <br /><Button variant="contained" style={{ backgroundColor: "#6062ff", margin: "2%" }} onClick={start} >Start Test</Button>
+                        </Card>
+                        </>}
+                        {!examdetails && <>
+                            <Typography variant="h3" component="h3" style={{ color: "white" }}>
+                                &nbsp; &nbsp; Hey! {details && details.Student_Name}
+                            </Typography>
+                            <br />
+                            <img src={photo} style={{height: "60%",borderRadius: "5%", marginLeft: "4%"}}/>
+                        </>
+                        }
 
-
-                        { }
                     </Grid>
                     <Grid item xs={6}>
-                        <br /><br /><br />
-                        <Typography variant="h2" component="h2" style={{ color: "white" }}>
-                            &nbsp; &nbsp;
-                            <TextField style={{ backgroundColor: "white" }} inputRef={testCode}></TextField>
-                            <Button variant="contained" style={{ backgroundColor: "#6062ff", margin: "10%" }} onClick={direct} >Register</Button>
-                            {examdetails && <Button variant="contained" style={{ backgroundColor: "#6062ff", margin: "10%" }} onClick={start} >Start Test</Button>}
-                        </Typography>
+                        <br /><br /><br /><br />
+                        {details && displayform && <Card sx={{ maxWidth: 500 }} style={{ padding: "1.5rem" }}>
+                            <Typography variant="h4" component="h4" style={{ color: "#141718" }}>
+                                Enter a valid test code  <br />
+                            </Typography>
+                            <TextField id="outlined-basic" label="Test Code" variant="outlined" inputRef={testCode} fullWidth sx={{ m: 1 }}></TextField>
+
+                            <Button variant="contained" style={{ backgroundColor: "#6062ff", margin: "2%" }} onClick={direct} >Submit</Button>
+                        </Card>
+                        }
                     </Grid>
                 </Grid>
             </Box>
+            <Footer />
         </>
     )
 }

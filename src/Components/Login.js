@@ -32,9 +32,10 @@ export default function Login() {
         setLoading(true);
         try {
             await login(emailRef.current.value, passwordRef.current.value)
-            history.push('/student-dashboard')
+            history.push('/dashboard')
         } catch (e) {
             alert("Failed to login")
+            setLoading(true);
             console.log(e)
         }
     }
@@ -49,7 +50,7 @@ export default function Login() {
                     sm={4}
                     md={7}
                     sx={{
-                        backgroundImage: 'url(https://source.unsplash.com/random)',
+                        backgroundImage: 'url(https://source.unsplash.com/invigilate)',
                         backgroundRepeat: 'no-repeat',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',

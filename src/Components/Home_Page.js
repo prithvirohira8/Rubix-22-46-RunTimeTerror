@@ -4,6 +4,7 @@ import Typography from '@mui/material/Typography';
 import {Link, useHistory} from "react-router-dom"
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import Footer from '../Footer';
 export default function Home_Page() {
   
   return (
@@ -15,6 +16,7 @@ export default function Home_Page() {
         <span style={{color: "#6062ff"}}>Proctor It</span> A Platform for conducting proctured online examinations
       </Typography>;
       </div>
+      <Footer />
     </>
   )
 }
