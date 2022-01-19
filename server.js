@@ -24,6 +24,11 @@ app.get("/", (req, res) => {
 
 })
 
+app.get("/:testcode", (req, res) => {
+    console.log(req.params);
+    res.render('test')
+})
+
 app.listen(3000, () => {
     console.log("Listening on port 3000");
 })

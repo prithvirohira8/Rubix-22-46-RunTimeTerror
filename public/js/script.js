@@ -14,7 +14,7 @@ webcam.start().then(res => {
         faceapi.nets.ssdMobilenetv1.loadFromUri('../models')
       ]).then(start)
 
-    }, 5000);
+    }, 1000);
 
   })
 })
@@ -35,18 +35,18 @@ function dataURLtoFile(dataurl, filename) {
 }
 
 async function start() {
-  alert("Function running")
-  const container = document.createElement('div')
-  container.style.position = 'relative'
-  document.body.append(container)
   const labeledFaceDescriptors = await loadLabeledImages()
+  alert("Face recognition started")
+  const video = document.querySelector('.video');
+  video.removeChild(canvasElement);
+  const container = document.createElement('div')
+  document.querySelector('.video').appendChild(container)
+
   const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.6)
   let image;
   let canvas;
-  document.body.append('Loaded')
-  console.log("Firing Event");
   // imageUpload.addEventListener('change', async () => {
-  alert("Event fired ")
+
   if (image) image.remove()
   if (canvas) canvas.remove()
 
@@ -56,6 +56,7 @@ async function start() {
 
   container.append(image)
   canvas = faceapi.createCanvasFromMedia(image)
+  canvas.className = "check"
   container.append(canvas)
   const displaySize = { width: image.width, height: image.height }
   faceapi.matchDimensions(canvas, displaySize)
@@ -67,6 +68,11 @@ async function start() {
     const drawBox = new faceapi.draw.DrawBox(box, { label: result.toString() })
     drawBox.draw(canvas)
   })
+  alert("Image Verified Succesfully");
+  const register = document.createElement('button');
+  register.className = "Start";
+  register.innerHTML = `Register`
+  document.querySelector('.buttons').appendChild(register);
   // });
 }
 
