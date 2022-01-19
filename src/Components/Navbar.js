@@ -19,32 +19,28 @@ const pages = ['Products', 'Pricing', 'Blog', 'More Info', 'ETC'];
 
 const Navbar = () => {
   const history = useHistory()
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
-  const [anchorElUser, setAnchorElUser] = React.useState(null);
 
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
+  const [anchorEl_1, setAnchorEl_1] = React.useState(null);
+  const open_1 = Boolean(anchorEl_1);
+  const handleClick_1 = (event) => {
+    setAnchorEl_1(event.currentTarget);
   };
-  const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
-  };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
+  const handleClose_1 = () => {
+    setAnchorEl_1(null);
   };
 
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const open = Boolean(anchorEl);
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
+  const [anchorEl_2, setAnchorEl_2] = React.useState(null);
+  const open_2 = Boolean(anchorEl_2);
+  const handleClick_2 = (event) => {
+    setAnchorEl_2(event.currentTarget);
   };
-  const handleClose = () => {
-    setAnchorEl(null);
+  const handleClose_2 = () => {
+    setAnchorEl_2(null);
   };
-
+  const student_login = () => {history.push('/student-login')}
+  const organization_login = () =>{history.push('/login')}
   const student_signup = () => { history.push('/student-sign-up'); }
   const organization_signup = () => { history.push('/sign-up'); }
-  const login = () => { history.push('/login') }
   return (
     <>
       <AppBar position="static" style={{ backgroundColor: "black" }}>
@@ -58,56 +54,18 @@ const Navbar = () => {
             >
               <img src={logo} style={{ borderRadius: "50%", width: "15%", height: "15%" }} />
             </Typography>
-
-            <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
-              <IconButton
-                size="large"
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleOpenNavMenu}
-                color="inherit"
-              >
-                <MenuIcon />
-              </IconButton>
-              <Menu
-                id="menu-appbar"
-                anchorEl={anchorElNav}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'left',
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'left',
-                }}
-                open={Boolean(anchorElNav)}
-                onClose={handleCloseNavMenu}
-                sx={{
-                  display: { xs: 'block', md: 'none' },
-                }}
-              >
-                {pages.map((page) => (
-                  <MenuItem key={page} onClick={handleCloseNavMenu}>
-                    <Typography textAlign="center">{page}</Typography>
-                  </MenuItem>
-                ))}
-              </Menu>
-            </Box>
             <Typography
               variant="h6"
               noWrap
               component="div"
               sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}
             >
-              LOGO
+              Invigilate
             </Typography>
             <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
               {pages.map((page) => (
                 <Button
                   key={page}
-                  onClick={handleCloseNavMenu}
                   sx={{ my: 2, color: 'white', display: 'block' }}
                 >
                   {page}
@@ -115,16 +73,33 @@ const Navbar = () => {
               ))}
             </Box>
             <Box sx={{ flexGrow: 0 }}>
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                
-                  <Button id="Login" variant="outlined" style={{ color: "#6062ff", marginRight: "1rem" }} onClick={login}>Login</Button>
-                  <Button id="Sign-Up" variant="contained" style={{ backgroundColor: "#6062ff" }} onClick={handleClick}>Sign up</Button>
+              <IconButton  sx={{ p: 0 }}>
+                  <Button id="Login" variant="outlined" style={{ color: "#6062ff", marginRight: "1rem" }} onClick={handleClick_2}>Login</Button>
+                  <Menu
+                    id="Login"
+                    aria-labelledby="demo-positioned-button"
+                    anchorEl={anchorEl_2}
+                    open={open_2}
+                    onClose={handleClose_2}
+                    anchorOrigin={{
+                      vertical: 'top',
+                      horizontal: 'left',
+                    }}
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'left',
+                    }}
+                  >
+                    <MenuItem onClick={student_login}>Student login</MenuItem>
+                    <MenuItem onClick={organization_login}>Organization Login</MenuItem>
+                  </Menu>
+                  <Button id="Sign-Up" variant="contained" style={{ backgroundColor: "#6062ff" }} onClick={handleClick_1}>Sign up</Button>
                   <Menu
                     id="Sign-Up"
                     aria-labelledby="demo-positioned-button"
-                    anchorEl={anchorEl}
-                    open={open}
-                    onClose={handleClose}
+                    anchorEl={anchorEl_1}
+                    open={open_1}
+                    onClose={handleClose_1}
                     anchorOrigin={{
                       vertical: 'top',
                       horizontal: 'left',
@@ -137,7 +112,6 @@ const Navbar = () => {
                     <MenuItem onClick={student_signup}>Student Signup</MenuItem>
                     <MenuItem onClick={organization_signup}>Organization Signup</MenuItem>
                   </Menu>
-                
               </IconButton>
             </Box>
           </Toolbar>
