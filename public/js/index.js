@@ -1,31 +1,16 @@
+const { spawn } = require('child_process');
 
+//const childPython = spawn('python', ['--version']);
+const childPython = spawn('python', ['main.py', 'obama1.jpeg', 'obama2.jpeg']);
 
-document.getElementById('contactForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const name = document.getElementById('name').value;
-    const email = document.getElementById('email').value;
-    snap(name, email);
-})
+childPython.stdout.on('data', (data) => {
+    console.log(`stdout: ${data}`);
+});
 
-function snap(name, email) {
-    const webcamElement = document.getElementById('webcam');
-    const canvasElement = document.getElementById('canvas');
-    const webcam = new Webcam(webcamElement, 'user', canvasElement);
-    webcam.start().then(res => {
-        setTimeout(() => {
-            picture = webcam.snap();
-            const mediaStream = webcamElement.srcObject;
-            const tracks = mediaStream.getTracks();
-            tracks[0].stop();
-            tracks.forEach(track => track.stop())
-            document.querySelector(".video").removeChild(webcamElement)
-            canvasElement.className = "";
-            dbStuff(name, email, picture);
-        }, 5000);
-    })
-}
+childPython.stderr.on('data', (data) => {
+    console.log(`stderr: ${data}`);
+});
 
-function dbStuff(name, email, picture) {
-    console.log(name, email);
-    console.log(picture);
-}
+childPython.on('close', (code) => {
+    console.log(`Program closed with code: ${code}`);
+});

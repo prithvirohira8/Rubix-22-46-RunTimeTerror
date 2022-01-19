@@ -1,24 +1,3 @@
-const webcamElement = document.getElementById('webcam');
-const canvasElement = document.getElementById('canvas');
-const snapSoundElement = document.getElementById('snapSound');
-const webcam = new Webcam(webcamElement, 'user', canvasElement);
-let picture;
-webcam.start().then(res => {
-  document.getElementById("snap").addEventListener('click', (e) => {
-    setTimeout(() => {
-      picture = webcam.snap();
-      canvasElement.className = "";
-      Promise.all([
-        faceapi.nets.faceRecognitionNet.loadFromUri('../models'),
-        faceapi.nets.faceLandmark68Net.loadFromUri('../models'),
-        faceapi.nets.ssdMobilenetv1.loadFromUri('../models')
-      ]).then(start)
-
-    }, 1000);
-
-  })
-})
-
 
 
 
@@ -77,7 +56,7 @@ async function start() {
 }
 
 function loadLabeledImages() {
-  const labels = ["Abhishek Sharma"]
+  const labels = [name]
   // const labels = ['Black Widow', 'Captain America', 'Captain Marvel', 'Hawkeye', 'Jim Rhodes', 'Thor', 'Tony Stark']
   return Promise.all(
     labels.map(async label => {

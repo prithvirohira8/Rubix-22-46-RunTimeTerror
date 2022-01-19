@@ -52,26 +52,29 @@
 
 
 <body style="background-color:#FBE5E5;">
-    <h1 id="name">Welcome User</h1>
-    <h2>Make sure that you are in well-lighted room !!</h2>
-    <div class="video">
-        <video id="webcam" autoplay playsinline width="600" height="400"></video>
-        <canvas id="canvas" class="d-none"></canvas>
-    </div>
-    <div class="buttons">
-        <button id="snap">Take Snap</button>
+    <div class="god">
+        <div class="face">
+            <h1 id="name">Welcome User</h1>
+            <h2>Make sure that you are in well-lighted room !!</h2>
+            <div class="video">
+                <video id="webcam" autoplay playsinline width="600" height="400"></video>
+                <canvas id="canvas" class="d-none"></canvas>
+            </div>
+            <div class="buttons">
+                <button id="snap">Take Snap</button>
 
+            </div>
+        </div>
     </div>
+
 </body>
-<script src="https://www.gstatic.com/firebasejs/7.14.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/7.14.1/firebase-auth.js"></script>
-<script>
-    let user = "<%= userdata %>"
-    console.log(user);
-    user = user.replaceAll("&#34;", '"');
-    user = JSON.parse(user);
-    console.log(user);
-
+<script type="module" src="https://www.gstatic.com/firebasejs/9.6.3/firebase-app.js"></script>
+<script type="module" src="https://www.gstatic.com/firebasejs/9.6.3/firebase-auth.js"></script>
+<script type="module" src="https://www.gstatic.com/firebasejs/9.6.3/firebase-database.js"></script>
+<script src="js/testing.js"></script>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.3/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.6.3/firebase-database.js";
     const firebaseConfig = {
         apiKey: "AIzaSyBWmxHRWsvQONiSv6lzvefFDPhkIP3gCh4",
         authDomain: "proctor-it-abd2f.firebaseapp.com",
@@ -81,12 +84,146 @@
         messagingSenderId: "889623845274",
         appId: "1:889623845274:web:c6fb42fdc51bc680f10223"
     };
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    // app.auth().setPersistence(firebase.auth.Auth.Persistence.NONE);
+    const database = getDatabase(app);
+    console.log(database);
 
-    firebase.initializeApp(firebaseConfig);
+
+    let name = "";
+    let pic = "";
+    let picture = "";
+    // let link = "" ; 
+    const starCountRef = ref(database, 'Students/' + 'p9ihIPDIyVZOrzfa8J9PNuoMX5h1');
+    const webcamElement = document.getElementById('webcam');
+    const canvasElement = document.getElementById('canvas');
+    const snapSoundElement = document.getElementById('snapSound');
+    const webcam = new Webcam(webcamElement, 'user', canvasElement);
+    onValue(starCountRef, (snapshot) => {
+        const data = snapshot.val();
+        // console.log(data);
+        name = data.Student_Name;
+        document.getElementById('name').innerHTML = `Welcome ${name}`
+        pic = data.Photo;
+
+
+        webcam.start().then(res => {
+            document.getElementById("snap").addEventListener('click', (e) => {
+
+                setTimeout(() => {
+                    picture = webcam.snap();
+                    canvasElement.className = "";
+
+                    fetch("http://localhost:4000/compare", {
+                        method: "POST",
+                        headers: {
+                            'Content-Type': 'application/json'
+                            // 'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: JSON.stringify({ picture, pic })
+
+                    })
+
+
+                    // Promise.all([
+                    //     faceapi.nets.faceRecognitionNet.loadFromUri('./models'),
+                    //     faceapi.nets.faceLandmark68Net.loadFromUri('./models'),
+                    //     faceapi.nets.ssdMobilenetv1.loadFromUri('./models')
+                    // ]).then(start)
+
+                }, 1000);
+
+            })
+        })
+    });
+
+    function dataURLtoFile(dataurl, filename) {
+        var arr = dataurl.split(','),
+            mime = arr[0].match(/:(.*?);/)[1],
+            bstr = atob(arr[1]),
+            n = bstr.length,
+            u8arr = new Uint8Array(n);
+        while (n--) {
+            u8arr[n] = bstr.charCodeAt(n);
+        }
+        return new File([u8arr], filename, { type: mime });
+    }
+
+    async function start() {
+        const labeledFaceDescriptors = await loadLabeledImages()
+        alert("Face recognition started")
+        const video = document.querySelector('.video');
+        video.removeChild(canvasElement);
+        const container = document.createElement('div')
+        document.querySelector('.video').appendChild(container)
+
+        const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.6)
+        let image;
+        let canvas;
+        // imageUpload.addEventListener('change', async () => {
+
+        if (image) image.remove()
+        if (canvas) canvas.remove()
+
+        const file = dataURLtoFile(pic, "testImg");
+        image = await faceapi.bufferToImage(file)
+        // image = await faceapi.bufferToImage(dataURLtoFile(data, "test"))
+
+        container.append(image)
+        canvas = faceapi.createCanvasFromMedia(image)
+        canvas.className = "check"
+        container.append(canvas)
+        const displaySize = { width: image.width, height: image.height }
+        faceapi.matchDimensions(canvas, displaySize)
+        const detections = await faceapi.detectAllFaces(image).withFaceLandmarks().withFaceDescriptors()
+        const resizedDetections = faceapi.resizeResults(detections, displaySize)
+        const results = resizedDetections.map(d => faceMatcher.findBestMatch(d.descriptor))
+        results.forEach((result, i) => {
+            const box = resizedDetections[i].detection.box
+            const drawBox = new faceapi.draw.DrawBox(box, { label: result.toString() })
+            drawBox.draw(canvas)
+        })
+        alert("Image Verified Succesfully");
+        const register = document.createElement('button');
+        register.className = "start";
+        register.innerHTML = `Start`
+        document.querySelector('.god').appendChild(register);
+        fun();
+        // });
+    }
+
+    function loadLabeledImages() {
+        const labels = [name]
+        // const labels = ['Black Widow', 'Captain America', 'Captain Marvel', 'Hawkeye', 'Jim Rhodes', 'Thor', 'Tony Stark']
+        return Promise.all(
+            labels.map(async label => {
+                const descriptions = []
+                for (let i = 1; i <= 1; i++) {
+                    // const img = await faceapi.fetchImage(`https://raw.githubusercontent.com/WebDevSimplified/Face-Recognition-JavaScript/master/labeled_images/${label}/${i}.jpg`)
+
+                    const img = await faceapi.fetchImage(picture);
+                    // console.log(img);
+                    const detections = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor()
+                    // console.log(detections);
+                    if (detections == undefined) {
+                        alert("Face cannot be detected !!");
+                        return;
+                    }
+                    // console.log(detections.length);
+                    descriptions.push(detections.descriptor)
+                }
+
+                // alert("Loading done")
+                return new faceapi.LabeledFaceDescriptors(label, descriptions)
+            })
+        )
+    }
 
 </script>
-
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script defere src="js/test.js"></script>
 <script defer src="js/script.js"></script>
+
 
 </html>
