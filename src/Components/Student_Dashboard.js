@@ -69,6 +69,11 @@ export default function Student_Dashboard() {
     }
 
     const start = () => {
+        var test_details = firebase.database().ref('Students/' + currentUser.uid+'/Tests/'+examdetails.test_key);
+        const student_test_data = {
+            tabs_changed: 0
+        }
+        test_details.set(student_test_data)
         const code = testCode.current.value;
         var bytes = CryptoJS.AES.decrypt(code, 'my-secret-key@123');
         console.log(bytes.toString(CryptoJS.enc.Utf8))
@@ -203,6 +208,7 @@ export default function Student_Dashboard() {
                     </Grid>
                 </Grid>
             </Box>
+            <br /><br />
             <Footer />
         </>
     )

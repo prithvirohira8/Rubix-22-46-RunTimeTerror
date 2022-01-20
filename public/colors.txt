@@ -1,3 +1,18 @@
 dark blue: #141718
 light purple: #6062ff
 white: #eceded
+
+
+import { getDatabase, ref, set } from "firebase/database";
+
+  let ref_str = 'Students/' + student_uid+'/Tests'
+  let student_tabs_changed = 0;
+  
+  (ur same code to read data)
+  //in the read function
+  student_tabs_changed = snapshot.val().tabs_changed
+  const db = getDatabase();
+  set(ref(db, ref_str), {
+    tabs_changed = student_tabs_changed + 1
+    
+}
