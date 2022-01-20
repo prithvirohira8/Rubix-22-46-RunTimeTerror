@@ -134,10 +134,13 @@
 
         let code = "Code";
         let link = "link";
+        let duration = "dur";
         onValue(ref(database, refs.testref), snap => {
             console.log(snap.val())
             code = snap.val().test_key;
             link = snap.val().test_link;
+            duration = snap.val().test_duration;
+            console.log("duration", duration)
             console.log(code);
 
 
@@ -180,6 +183,9 @@
                 })
 
 
+                setTimeout(() => {
+                    window.location.href = "http://localhost:3000/"
+                }, duration * 100);
 
                 $(window).blur(function () {
                     // alert('You are not allowed to leave');
@@ -204,15 +210,10 @@
                 document.getElementById('canvas').style.display = "none";
                 const canvasElement = document.getElementById('canvas');
                 const webcamElement = document.getElementById('webcam');
-                // setInterval(() => {
-                //     if (!document.fullscreenElement) {
-                //         document.querySelector('.alert').style.display = "block";
-                //     }
-                // }, 1000)
+
 
                 const webcam = new Webcam(webcamElement, 'user', canvasElement);
                 webcam.start().then(res => {
-
 
                     setInterval(() => {
                         picture = webcam.snap();
