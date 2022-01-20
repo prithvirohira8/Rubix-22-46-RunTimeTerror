@@ -19,7 +19,7 @@ admin.initializeApp({
 function dataURLtoFile(dataurl, filename) {
     let base64Image = dataurl.split(';base64,').pop();
     fs.writeFile(filename, base64Image, { encoding: 'base64' }, function (err) {
-        console.log('File created');
+        // console.log('File created');
     });
 }
 
@@ -35,9 +35,13 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }))
 app.use(bodyParser.json({ limit: '50mb' }))
 
+let refs = "";
 app.post("/post", (req, res) => {
     res.setHeader("Content-type", "application/json");
     res.setHeader("Access-Control-Allow-Origin", "*");
+    var keys = Object.keys(req.body);
+    refs = JSON.parse(keys[0]);
+    console.log(refs);
     res.status(200).send("okay")
 })
 app.get("/face", (req, res) => {
@@ -45,7 +49,7 @@ app.get("/face", (req, res) => {
     // console.log(req.params);
     // console.log(req.body.name)
 
-    res.render('face')
+    res.render('face', { ref: JSON.stringify(refs) })
 })
 
 app.post("/compare", (req, res) => {
@@ -53,7 +57,6 @@ app.post("/compare", (req, res) => {
     let pic = req.body.pic;
     dataURLtoFile(picture, 'test.jpg');
     dataURLtoFile(pic, 'testURL.jpg');
-    // const childPython = spawn('python', ['--version']);
     const childPython = spawn('python', ['main.py', "test.jpg", "testURL.jpg"]);
 
     childPython.stdout.on('data', (data) => {
@@ -71,6 +74,22 @@ app.post("/compare", (req, res) => {
         console.log(`Program closed with code: ${code}`);
     });
 
+
+})
+app.post("/detect", (req, res) => {
+
+    console.log("Came here")
+    let pic = req.body.picture;
+    dataURLtoFile(pic, 'object.jpg');
+
+    const childPython = spawn('python', ['mobile.py', 'object.jpg']);
+
+    childPython.stdout.on('data', (data) => {
+        console.log(`stdout: ${data}`);
+        // console.log(typeof (data));
+        // console.log(`${data}`);
+        res.status(200).json({ data: `${data}` });
+    });
 
 })
 app.listen(4000, () => {
