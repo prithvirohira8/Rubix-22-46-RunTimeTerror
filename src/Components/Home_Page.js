@@ -18,6 +18,7 @@ export default function Home_Page() {
       </Typography>;
       </div>
       <div style={{width: "60%",margin: "0 auto"}}><img src={Img} ></img></div>
+      <section />
       <Footer />
     </>
   )

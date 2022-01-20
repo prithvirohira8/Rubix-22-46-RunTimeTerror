@@ -17,6 +17,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { auth } from "../firebase";
 import firebase from "../firebase";
 import { useHistory } from 'react-router-dom';
+import Img from '../o2.jpg'
 
 const theme = createTheme();
 
@@ -85,12 +86,13 @@ export default function Signup() {
                     sm={4}
                     md={7}
                     sx={{
-                        backgroundImage: 'url(https://source.unsplash.com/invigilate)',
                         backgroundRepeat: 'no-repeat',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                     }}
-                />
+                >
+                <img src = {Img} style={{height: "100%"}}></img> 
+                </Grid>
                 <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
                     <Box
                         sx={{
