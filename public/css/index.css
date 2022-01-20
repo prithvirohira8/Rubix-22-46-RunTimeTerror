@@ -48,3 +48,16 @@ iframe{
     top: 5%;
     left: 4.2%;
 }
+
+.alert{
+    display: none !important ;
+    background: black;
+    position: absolute;
+    top:50%; 
+    left:50%; 
+    transform: translate(-50%,-50%);
+    border : 2px solid white ; 
+    z-index : 10 ; 
+    display: grid;
+    grid-template-rows: 1fr 1fr ;
+}

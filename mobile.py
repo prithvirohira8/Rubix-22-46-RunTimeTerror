@@ -20,7 +20,7 @@ remote_image_url = "https://www.google.com/url?sa=i&url=https%3A%2F%2Fm.economic
 # image1 = open(test_image_array1[0], 'r+b')
 
 
-print("===== Describe an image - remote =====")
+# print("===== Describe an image - remote =====")
 # Call API
 
 
@@ -31,16 +31,16 @@ def mobile_checker(path):
         image1)
 
     # Get the captions (descriptions) from the response, with confidence level
-    print("Description of remote image: ")
+    # print("Description of remote image: ")
     if (len(description_results.captions) == 0):
         print("No description detected.")
     else:
         for caption in description_results.captions:
             if "phone" in caption.text:
-                print("Phone detected.Will be Kicked out if detected twice !!")
+                print(1)
                 return True
             else:
-                print("No Phone detected")
+                print(0)
                 return False
 
 

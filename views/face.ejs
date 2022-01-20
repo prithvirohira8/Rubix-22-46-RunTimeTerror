@@ -8,11 +8,13 @@
 
     <title>Face Recognition</title>
     <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/style.css">
     <style>
 
     </style>
 
     <script defer src="js/face-api.min.js"></script>
+    <script defer src="js/time.min.js"></script>
     <script defer type="text/javascript" src="https://unpkg.com/webcam-easy/dist/webcam-easy.min.js"></script>
 </head>
 
@@ -26,9 +28,18 @@
                 <video id="webcam" autoplay playsinline width="600" height="400"></video>
                 <canvas id="canvas" class="d-none"></canvas>
             </div>
-            <div class="buttons">
-                <button id="snap">Take Snap</button>
-            </div>
+
+        </div>
+        <div class="buttons">
+            <button id="snap">Take Snap</button>
+        </div>
+
+
+        <div class="alert">
+            <h2>You are not FullScreen</h2>
+            <button class="ok">
+                Go FullScreen
+            </button>
         </div>
     </div>
 
@@ -36,7 +47,7 @@
 <script type="module" src="https://www.gstatic.com/firebasejs/9.6.3/firebase-app.js"></script>
 <script type="module" src="https://www.gstatic.com/firebasejs/9.6.3/firebase-auth.js"></script>
 <script type="module" src="https://www.gstatic.com/firebasejs/9.6.3/firebase-database.js"></script>
-<script src="js/testing.js"></script>
+
 <script type="module">
     let refs = "<%= ref %>"
     refs = refs.replaceAll("&#34;", '"');
@@ -72,9 +83,10 @@
     const webcam = new Webcam(webcamElement, 'user', canvasElement);
     onValue(starCountRef, (snapshot) => {
         const data = snapshot.val();
-        // console.log(data);
+
         name = data.Student_Name;
-        document.getElementById('name').innerHTML = `Welcome ${name}`
+        if (document.querySelector('.face'))
+            document.getElementById('name').innerHTML = `Welcome ${name}`
         pic = data.Photo;
 
 
@@ -121,54 +133,69 @@
     function fun(pic) {
 
         let code = "Code";
+        let link = "link";
         onValue(ref(database, refs.testref), snap => {
             console.log(snap.val())
             code = snap.val().test_key;
+            link = snap.val().test_link;
+            console.log(code);
 
 
             let ref_str = 'Students/' + refs.studentref + '/Tests/' + code;
-            // let student_tabs_changed = 0;
             let read = 0;
             onValue(ref(database, ref_str), (snapshot) => {
                 console.log(snapshot.val());
                 read = snapshot.val().tabs_changed;
-                if (read >= 2) {
-                    window.close();
-                }
             });
 
             document.querySelector('.start').addEventListener('click', (e) => {
                 document.querySelector('.god').removeChild(document.querySelector('.face'));
 
-                const link = "https://docs.google.com/forms/d/e/1FAIpQLSeQS6-3-A94lBOzins6oyO0A04DssSdUYhPG5nWJTpfF5byEw/viewform?usp=sf_link";
+                TimeMe.initialize({
+                    currentPageName: `${document.title}`, // current page
+                    idleTimeoutInSeconds: 30 // seconds
+                });
+
+                setInterval(() => {
+                    let timeSpentOnPage = TimeMe.getTimeOnCurrentPageInSeconds();
+                    console.log(timeSpentOnPage);
+                }, 1000);
+
+                // link = "https://docs.google.com/forms/d/e/1FAIpQLSeQS6-3-A94lBOzins6oyO0A04DssSdUYhPG5nWJTpfF5byEw/viewform?usp=sf_link";
+
                 link.replace("usp=sf_link", "embedded=true");
                 const iframe = document.createElement('iframe');
                 iframe.src = link;
                 iframe.width = 650;
                 iframe.height = 680;
                 document.querySelector('.god').appendChild(iframe);
-                document.querySelector('.god').removeChild(document.querySelector('.start'));
+                // document.querySelector('.god').removeChild(document.querySelector('.start'));
+                document.querySelector('.start').style.display = "none";
+                document.getElementById('snap').style.display = "none";
                 document.documentElement.webkitRequestFullscreen();
+
+                document.querySelector('.ok').addEventListener('click', e => {
+                    document.documentElement.webkitRequestFullscreen();
+                    document.querySelector('.alert').style.display = "none";
+                })
+
+
 
                 $(window).blur(function () {
                     // alert('You are not allowed to leave');
                     let ref_str = 'Students/' + refs.studentref + '/Tests/' + code;
-                    // let student_tabs_changed = 0;
                     let read = 0;
                     onValue(ref(database, ref_str), (snapshot) => {
                         console.log(snapshot.val());
                         read = snapshot.val().tabs_changed;
-                        console.log(read);
-                        if (read >= 2) {
-                            window.close();
-                        }
-                        console.log("Read value")
                     });
                     set(ref(database, ref_str), {
                         tabs_changed: read + 1
                     })
 
                 });
+
+
                 const video = document.createElement('div');
                 video.className = "new-video";
                 document.querySelector('.god').appendChild(video);
@@ -177,37 +204,46 @@
                 document.getElementById('canvas').style.display = "none";
                 const canvasElement = document.getElementById('canvas');
                 const webcamElement = document.getElementById('webcam');
+                // setInterval(() => {
+                //     if (!document.fullscreenElement) {
+                //         document.querySelector('.alert').style.display = "block";
+                //     }
+                // }, 1000)
 
                 const webcam = new Webcam(webcamElement, 'user', canvasElement);
                 webcam.start().then(res => {
+
+
                     setInterval(() => {
                         picture = webcam.snap();
-                        // console.log(pic);
-                        // console.log(picture);
-                        // fetch("http://localhost:4000/compare", {
-                        //     method: "POST",
-                        //     headers: {
-                        //         'Content-Type': 'application/json'
-                        //         // 'Content-Type': 'application/x-www-form-urlencoded',
-                        //     },
-                        //     body: JSON.stringify({ picture, pic })
-                        // }).then(res => res.json())
-                        //     .then(data => {
-                        //         console.log(data.data);
-                        //     })
+                        fetch("http://localhost:4000/compare", {
+                            method: "POST",
+                            headers: {
+                                'Content-Type': 'application/json'
+                                // 'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                            body: JSON.stringify({ picture, pic })
+                        }).then(res => res.json())
+                            .then(data => {
+                                console.log(data.data);
+                            })
 
-                        // fetch("http://localhost:4000/detect", {
-                        //     method: "POST",
-                        //     headers: {
-                        //         'Content-Type': 'application/json'
-                        //         // 'Content-Type': 'application/x-www-form-urlencoded',
-                        //     },
-                        //     body: JSON.stringify({ picture })
-                        // }).then(res => res.json())
-                        //     .then(data => {
-                        //         console.log(data.data)
-                        //     })
-                    }, 10000);
+                        fetch("http://localhost:4000/detect", {
+                            method: "POST",
+                            headers: {
+                                'Content-Type': 'application/json'
+                                // 'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                            body: JSON.stringify({ picture })
+                        }).then(res => res.json())
+                            .then(data => {
+                                console.log(data.data)
+                                console.log(typeof (data.data))
+                                if (data.data == 1) {
+                                    alert("Mobile Detected !!")
+                                }
+                            })
+                    }, 20000);
 
 
 
@@ -297,6 +333,7 @@
     }
 
 </script>
+<script src="js/testing.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script defere src="js/test.js"></script>
 <script defer src="js/script.js"></script>
