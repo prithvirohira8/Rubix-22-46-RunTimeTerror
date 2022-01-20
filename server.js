@@ -17,24 +17,10 @@ admin.initializeApp({
 });
 
 function dataURLtoFile(dataurl, filename) {
-    // var arr = dataurl.split(','),
-    //     mime = arr[0].match(/:(.*?);/)[1],
-    //     bstr = atob(arr[1]),
-    //     n = bstr.length,
-    //     u8arr = new Uint8Array(n);
-    // while (n--) {
-    //     u8arr[n] = bstr.charCodeAt(n);
-    // }
-    // return new File([u8arr], filename, { type: mime });
-
-    // const buffer = Buffer.from(dataurl, "base64");
-    // fs.writeFileSync("picture.jpg", buffer);
     let base64Image = dataurl.split(';base64,').pop();
     fs.writeFile(filename, base64Image, { encoding: 'base64' }, function (err) {
         console.log('File created');
     });
-
-
 }
 
 //Middle - wares 
@@ -63,25 +49,18 @@ app.get("/face", (req, res) => {
 })
 
 app.post("/compare", (req, res) => {
-
-
-    // req.body
-    console.log("yes came here")
-    // console.log(req.body)
-    res.status(200).send("hello")
-    // dataURLtoFile(req.body.picture, 'test')
     let picture = req.body.picture;
-    // picture = picture.replace("data:image/png;base64,", "")
     let pic = req.body.pic;
-
-
     dataURLtoFile(picture, 'test.jpg');
     dataURLtoFile(pic, 'testURL.jpg');
     // const childPython = spawn('python', ['--version']);
     const childPython = spawn('python', ['main.py', "test.jpg", "testURL.jpg"]);
 
     childPython.stdout.on('data', (data) => {
-        console.log(`stdout: ${data}`);
+        // console.log(`stdout: ${data}`);
+        // console.log(typeof (data));
+        // console.log(`${data}`);
+        res.status(200).json({ data: `${data}` });
     });
 
     childPython.stderr.on('data', (data) => {
@@ -91,6 +70,8 @@ app.post("/compare", (req, res) => {
     childPython.on('close', (code) => {
         console.log(`Program closed with code: ${code}`);
     });
+
+
 })
 app.listen(4000, () => {
     console.log("Listening on port 4000");

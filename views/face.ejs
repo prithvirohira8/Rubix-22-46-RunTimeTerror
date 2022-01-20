@@ -7,43 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Face Recognition</title>
+    <link rel="stylesheet" href="css/index.css">
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
 
-        .video {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            grid-gap: 2px;
-        }
-
-        #webcam {
-            border: 2px solid black;
-        }
-
-        #canvas {
-            border: 2px solid black;
-            height: 400px;
-            width: 580px;
-        }
-
-        #snap {
-            margin-top: 2px;
-        }
-
-        .check {
-            border: 2px solid black;
-            position: absolute;
-            left: 50%;
-        }
     </style>
 
     <script defer src="js/face-api.min.js"></script>
@@ -62,7 +28,6 @@
             </div>
             <div class="buttons">
                 <button id="snap">Take Snap</button>
-
             </div>
         </div>
     </div>
@@ -122,8 +87,15 @@
                             // 'Content-Type': 'application/x-www-form-urlencoded',
                         },
                         body: JSON.stringify({ picture, pic })
-
-                    })
+                    }).then(res => res.json())
+                        .then(data => {
+                            alert(data.data)
+                            const register = document.createElement('button');
+                            register.className = "start";
+                            register.innerHTML = `Start`
+                            document.querySelector('.god').appendChild(register);
+                            fun(pic);
+                        })
 
 
                     // Promise.all([
@@ -185,11 +157,7 @@
             drawBox.draw(canvas)
         })
         alert("Image Verified Succesfully");
-        const register = document.createElement('button');
-        register.className = "start";
-        register.innerHTML = `Start`
-        document.querySelector('.god').appendChild(register);
-        fun();
+
         // });
     }
 

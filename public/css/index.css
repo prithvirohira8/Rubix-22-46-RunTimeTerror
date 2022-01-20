@@ -1,0 +1,50 @@
+body {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.video {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 2px;
+}
+
+#webcam {
+    border: 2px solid black;
+}
+
+#canvas {
+    border: 2px solid black;
+    height: 400px;
+    width: 580px;
+}
+
+#snap {
+    margin-top: 2px;
+}
+
+.check {
+    border: 2px solid black;
+    position: absolute;
+    left: 50%;
+}
+iframe{
+    width: 900px;
+    position: absolute;
+    left: 33%;
+    top: 0;
+    overflow-y: hidden;
+}
+
+.new-video > #webcam{
+    position: absolute;
+    top: 5%;
+    left: 4.2%;
+}
