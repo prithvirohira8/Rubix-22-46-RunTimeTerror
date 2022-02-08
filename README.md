@@ -7,4 +7,7 @@ Invigilate (A platform built to proctor students during their examinations)
 - The react server is set up for authentication and the dashboard of both teachers and students. On this server teachers can schedule exams on their dashboard and on the students dashboard students can enter the test code provided by the teachers and register for the tests.
 - The node server is where the examination takes place and face verification takes place. (Face detection takes place every 5 seconds. If the user switches tabs the teacher will be informed on her dashboard.)
 
+The master branch consists of the react server code.
+The nodeServer branch consists of the Node JS code.
+
 
