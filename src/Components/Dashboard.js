@@ -180,7 +180,7 @@ export default function Dashboard() {
                     </Grid>
                 </Grid>
             </Box>
-            <Footer />
+            {/* <Footer /> */}
         </>
     )
 }

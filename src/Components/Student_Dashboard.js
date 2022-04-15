@@ -84,8 +84,7 @@ export default function Student_Dashboard() {
         var bytes = CryptoJS.AES.decrypt(code, 'my-secret-key@123');
         console.log(bytes.toString(CryptoJS.enc.Utf8))
         const obj = {
-            studentref: currentUser.uid,
-            testref: bytes.toString(CryptoJS.enc.Utf8)
+            studentref: currentUser.uid
         }
         fetch("http://localhost:4000/post", {
             method: "POST",
@@ -95,8 +94,8 @@ export default function Student_Dashboard() {
             },
             body: JSON.stringify(obj)
         }).then(res => {
-            // fetch("http://localhost:4000/123")
-            window.location.assign('http://localhost:4000/face')
+            let str = `http://localhost:4000/face/${code}`
+            window.location.assign(str)
         })
     }
     const notifyMe = () => {
@@ -153,7 +152,7 @@ export default function Student_Dashboard() {
                     <Grid item xs={6}>
                         <br />
                         {examdetails && <>
-                            <Card sx={{ maxWidth: 500 }} style={{ padding: "1.5rem" }} style={{ margin: "2%", padding: "2%" }}>
+                            <Card sx={{ maxWidth: 500 }} style={{ padding: "1.5rem" }} >
                                 <Typography variant="h3" component="h3" style={{ color: "#141718" }}>
                                     <b>Test Details</b>
                                 </Typography>
@@ -215,7 +214,7 @@ export default function Student_Dashboard() {
                 </Grid>
             </Box>
             <br /><br />
-            <Footer />
+            {/* <Footer /> */}
         </>
     )
 }
