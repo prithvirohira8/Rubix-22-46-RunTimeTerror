@@ -5,11 +5,11 @@ const { spawn } = require("child_process");
 const fs = require("fs");
 const Jimp = require("jimp");
 const atob = require("atob")
-
 const admin = require("firebase-admin");
 var keys = require("./keys.json");
 const jwt = require("jsonwebtoken")
 const bodyParser = require('body-parser');
+const cryptoJs = require("crypto-js");
 
 admin.initializeApp({
     credential: admin.credential.cert(keys),
@@ -23,13 +23,7 @@ function dataURLtoFile(dataurl, filename) {
     });
 }
 
-//Middle - wares 
-// app.use(express.urlencoded({
-//     extended: true
-// }))`
 app.use(express.static(__dirname + '/public'));
-// app.use(cookieParser());
-// app.use(express.json());
 app.set('views', './views');
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }))
@@ -41,28 +35,22 @@ app.post("/post", (req, res) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
     var keys = Object.keys(req.body);
     refs = JSON.parse(keys[0]);
-    console.log(refs);
+    console.log("refs: ", refs);
     res.status(200).send("okay")
-})
-app.get("/face", (req, res) => {
-    // res.setHeader("Content-type", "text/html");
-    // console.log(req.params);
-    // console.log(req.body.name)
-
-    res.render('face', { ref: JSON.stringify(refs) })
 })
 
 app.post("/compare", (req, res) => {
     let picture = req.body.picture;
     let pic = req.body.pic;
+
+
     dataURLtoFile(picture, 'test.jpg');
     dataURLtoFile(pic, 'testURL.jpg');
+
+
     const childPython = spawn('python', ['main.py', "test.jpg", "testURL.jpg"]);
 
     childPython.stdout.on('data', (data) => {
-        // console.log(`stdout: ${data}`);
-        // console.log(typeof (data));
-        // console.log(`${data}`);
         res.status(200).json({ data: `${data}` });
     });
 
@@ -76,6 +64,7 @@ app.post("/compare", (req, res) => {
 
 
 })
+
 app.post("/detect", (req, res) => {
 
     console.log("Came here")
@@ -92,6 +81,24 @@ app.post("/detect", (req, res) => {
     });
 
 })
+
+app.get("/face/:key", (req, res) => {
+    const key = req.params.key;
+    let bytes = cryptoJs.AES.decrypt(key, 'my-secret-key@123');
+    console.log(bytes.toString(cryptoJs.enc.Utf8));
+    res.render('face', { ref: JSON.stringify(refs), key: JSON.stringify(key) })
+})
+
+
+
+app.get("/Test/:id/:key", (req, res) => {
+    const key = req.params.key;
+    let bytes = cryptoJs.AES.decrypt(key, 'my-secret-key@123');
+    console.log(bytes.toString(cryptoJs.enc.Utf8));
+    res.render('test', { studentId: JSON.stringify(req.params.id), key: JSON.stringify(bytes.toString(cryptoJs.enc.Utf8)) });
+})
+
+
 app.listen(4000, () => {
     console.log("Listening on port 4000");
 })

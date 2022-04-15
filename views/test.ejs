@@ -6,11 +6,48 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Test</title>
+    <link rel="stylesheet" href="/css/exam.css">
+    <script defer type="text/javascript" src="https://unpkg.com/webcam-easy/dist/webcam-easy.min.js"></script>
 </head>
 
 <body>
-
+    <img id="loading" src="/image/loading.gif" alt="" width="100" height="100">
+    <div id="test-Interface" style="display: none;">
+        <video id="webcam" autoplay playsinline width="600" height="400"></video>
+        <canvas id="canvas" class="d-none"></canvas>
+        <button id="endTest">End Test</button>
+        <p id="time">
+            Starting...
+        </p>
+        <iframe id="googleForm" src="" width="50%" height="665" style="border: 1px solid black;"></iframe>
+    </div>
 </body>
-<script src="js/testing.js"></script>
+<script type="module" src="https://www.gstatic.com/firebasejs/9.6.3/firebase-app.js"></script>
+<script type="module" src="https://www.gstatic.com/firebasejs/9.6.3/firebase-auth.js"></script>
+<script type="module" src="https://www.gstatic.com/firebasejs/9.6.3/firebase-database.js"></script>
+
+<script src="/js/exam.js"></script>
+<script type="module">
+    let studentId = "<%= studentId %>"
+    studentId = studentId.replaceAll("&#34;", '"');
+    studentId = JSON.parse(studentId);
+    let key = "<%= key %>"
+    key = key.replaceAll("&#34;", '"');
+    key = JSON.parse(key);
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.3/firebase-app.js";
+    import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/9.6.3/firebase-database.js";
+    const firebaseConfig = {
+        apiKey: "AIzaSyBWmxHRWsvQONiSv6lzvefFDPhkIP3gCh4",
+        authDomain: "proctor-it-abd2f.firebaseapp.com",
+        databaseURL: "https://proctor-it-abd2f-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "proctor-it-abd2f",
+        storageBucket: "proctor-it-abd2f.appspot.com",
+        messagingSenderId: "889623845274",
+        appId: "1:889623845274:web:c6fb42fdc51bc680f10223"
+    };
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+    beginTest(studentId, key, database, getDatabase, ref, onValue, set);
+</script>
 
 </html>
