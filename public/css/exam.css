@@ -25,3 +25,27 @@
     cursor: pointer;
     z-index: 50;
 }
+
+#fullScreen {
+    width: 90vw;
+    height: 90vh;
+    position: absolute;
+    z-index: 10;
+    background: rgb(0 0 0 / 66%);
+    color: white;
+    line-height: 30px;
+    text-align: center;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#ok-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 2px solid black;
+    padding: 24px;
+    font-size: 25px;
+}
