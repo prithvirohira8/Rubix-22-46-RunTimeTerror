@@ -11,6 +11,7 @@ import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import loading from '../images/loading.gif'
+import { Alert } from '@mui/material';
 
 var CryptoJS = require("crypto-js");
 const myStyle = {
@@ -28,16 +29,18 @@ export default function Proctor() {
         var url = bytes.toString(CryptoJS.enc.Utf8);
 
         const testRef = firebase.database().ref(url);
-
         testRef.on('value', (snapshot) => {
             const data = snapshot.val();
             let students = data.students;
             students = CryptoJS.AES.decrypt(students, 'my-secret-key@123');
             students = students.toString(CryptoJS.enc.Utf8);
             let tempArr = students.split(',');
-            tempArr = [tempArr[1], tempArr[0]];
-            let final = [];
+            let Limit = tempArr.length;
+
+            // setArray([])
             tempArr.forEach(element => {
+                // alert("This was triggered")
+
                 const studentRef = firebase.database().ref('Students/' + element);
                 studentRef.on('value', (snapshot) => {
                     const data = snapshot.val();
@@ -51,8 +54,20 @@ export default function Proctor() {
                         const newData = snap.val();
                         console.log(newData)
                         obj = { ...obj, "fullScreen": newData.fullScreen, "tabSwitch": newData.tabs_changed }
-                        final.push(obj);
-                        setArray(arr => [...arr, obj]);
+                        setArray(arr => {
+                            if (arr.length == Limit) {
+                                for (let i = 0; i < arr.length; i++) {
+                                    if (arr[i]["name"] == obj["name"]) {
+                                        arr[i] = obj;
+                                    }
+                                }
+                                return [...arr]
+                            }
+                            else {
+                                return [...arr, obj]
+                            }
+                        });
+
                     })
 
                 })
