@@ -33,6 +33,7 @@ export default function Dashboard() {
     const { logout, currentUser } = useAuth();
     const [details, setDetails] = useState({});
     const [Display, setDisplay] = useState(false);
+    const [setting, setSetting] = useState(false);
     const [createTest, setcreateTest] = useState(false);
     const test_name = useRef();
     const test_format = useRef();
@@ -41,6 +42,8 @@ export default function Dashboard() {
     const test_date = useRef();
     const test_description = useRef();
     const test_link = useRef();
+    const fsDetect = useRef();
+    const tsDetect = useRef();
 
     async function getDetails() {
         var organization_details = firebase.database().ref('Organizations/' + currentUser.uid);
@@ -67,7 +70,10 @@ export default function Dashboard() {
             test_date: test_date.current.value,
             test_description: test_description.current.value,
             test_link: test_link.current.value,
-            test_key: ciphertext,
+            test_key: ciphertext.replaceAll('/', '@'),
+            fsDetects: parseInt(fsDetect.current.value, 10),
+            tsDetects: parseInt(tsDetect.current.value, 10),
+            students: "None"
         }
         console.log(ciphertext)
         var bytes = CryptoJS.AES.decrypt(ciphertext, 'my-secret-key@123');
@@ -142,6 +148,11 @@ export default function Dashboard() {
                                     <Card sx={{ maxWidth: 500 }} style={{ margin: "6%", padding: "2%" }}>
                                         <Typography variant="h4" component="h4" style={{ color: "black" }}>&nbsp; {k.test_name}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i style={{ color: "grey", fontSize: "70%" }}>{k.test_date}</i></Typography>
                                         &nbsp;&nbsp; <Button variant="contained" onClick={() => copy(k.test_key)}>Copy Test Link</Button>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<Button variant="contained"
+                                            onClick={() => {
+                                                let str = `http://localhost:3000/Proctor/${k.test_key}`
+                                                window.location.assign(str)
+                                            }}>Proctor</Button>
                                     </Card>
                                 </>
                             })
@@ -172,7 +183,11 @@ export default function Dashboard() {
                                     <TextField id="date" variant="standard" type="date" inputRef={test_date} />
                                     <TextField id="description" label="Test Description" variant="standard" fullWidth sx={{ m: 1 }} inputRef={test_description} />
                                     <TextField id="link" label="Test Link" variant="standard" fullWidth sx={{ m: 1 }} inputRef={test_link} />
-                                    <br /> <br />
+                                    <br />
+                                    <TextField id="name" label="FullScreen-Detects" variant="standard" inputRef={fsDetect} />
+                                    &nbsp; &nbsp; &nbsp; &nbsp;
+                                    <TextField id="description" label="TabSwitch-Detects" variant="standard" inputRef={tsDetect} />
+                                    <br /><br />
                                     <Button variant="contained" style={{ backgroundColor: "#6062ff" }} onClick={draftTest}>Create test</Button>
                                 </Card>
                             </>

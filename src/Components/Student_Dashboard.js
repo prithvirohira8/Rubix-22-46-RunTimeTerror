@@ -33,9 +33,9 @@ export default function Student_Dashboard() {
         var student_details = firebase.database().ref('Students/' + currentUser.uid);
         await student_details.on('value', (snapshot) => {
             setDetails(snapshot.val())
-            console.log(snapshot.val())
+            // console.log(snapshot.val())
             const img_b = snapshot.val().Photo
-            console.log(img_b);
+            // console.log(img_b);
             setPhoto(img_b)
         })
     }
@@ -45,15 +45,15 @@ export default function Student_Dashboard() {
             history.push('/')
         } catch (e) {
             alert('Failed to Logout')
-            console.log(e)
+            // console.log(e)
         }
     }
 
     const direct = () => {
-        const code = testCode.current.value;
+        const code = testCode.current.value.replaceAll('@', '/');
         settestcode(code);
         var bytes = CryptoJS.AES.decrypt(code, 'my-secret-key@123');
-        console.log(bytes.toString(CryptoJS.enc.Utf8))
+        // console.log(bytes.toString(CryptoJS.enc.Utf8))
         var ref = firebase.database().ref(bytes.toString(CryptoJS.enc.Utf8));
         try {
             ref.on('value', (snap) => {
@@ -64,25 +64,69 @@ export default function Student_Dashboard() {
             })
         } catch (error) {
             alert("Invalid test code")
-            console.log(error)
+            // console.log(error)
         }
         // console.log(code, name, pic);
+
+    }
+
+    const registerStudents = () => {
+        const key = testcode;
+        var bytes = CryptoJS.AES.decrypt(key, 'my-secret-key@123');
+        var url = bytes.toString(CryptoJS.enc.Utf8);
+        const testRef = firebase.database().ref(url);
+        let students;
+        testRef.on('value', (snapshot) => {
+            const data = snapshot.val();
+            students = data.students;
+        });
+        if (students == "None") {
+            students = currentUser.uid;
+            alert(students)
+            var ciphertext = CryptoJS.AES.encrypt(students, 'my-secret-key@123').toString();
+            testRef.on('value', (snapshot) => {
+                const data = snapshot.val();
+                data.students = ciphertext;
+                testRef.set(data)
+                changeServer();
+            });
+        }
+        else {
+            students = CryptoJS.AES.decrypt(students, 'my-secret-key@123');
+            students = students.toString(CryptoJS.enc.Utf8)
+
+            let studentArr = students.split(",");
+            if (studentArr.indexOf(currentUser.uid) === -1) {
+                studentArr.push(currentUser.uid);
+            }
+            students = "";
+            for (let i = 0; i < studentArr.length; i++) {
+                students += studentArr[i];
+                if (i < (studentArr.length - 1))
+                    students += ',';
+            }
+            var ciphertext = CryptoJS.AES.encrypt(students, 'my-secret-key@123').toString();
+            testRef.on('value', (snapshot) => {
+                const data = snapshot.val();
+                data.students = ciphertext;
+                testRef.set(data)
+                changeServer();
+            });
+        }
 
     }
 
     const start = () => {
         var test_details = firebase.database().ref('Students/' + currentUser.uid + '/Tests/' + examdetails.test_key);
         const student_test_data = {
+            fullScreen: 0,
             tabs_changed: 0
         }
         test_details.set(student_test_data)
-        changeServer();
+        registerStudents();
     }
-
     const changeServer = () => {
-        const code = testcode;
-        var bytes = CryptoJS.AES.decrypt(code, 'my-secret-key@123');
-        console.log(bytes.toString(CryptoJS.enc.Utf8))
+        const code = testcode.replaceAll('/', '@');
         const obj = {
             studentref: currentUser.uid
         }
@@ -109,9 +153,9 @@ export default function Student_Dashboard() {
             user_email: details.Email
         }
         emailjs.send('service_3zd807n', 'template_z0wuz5m', obj, 'user_0nQqZkKHNAxpAJBXyIs7O').then((result) => {
-            console.log(result.text);
+            // console.log(result.text);
         }, (error) => {
-            console.log(error.text);
+            // console.log(error.text);
         });
     }
     useEffect(() => {
