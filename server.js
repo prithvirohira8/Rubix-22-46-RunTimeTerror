@@ -92,10 +92,16 @@ app.get("/face/:key", (req, res) => {
 
 
 app.get("/Test/:id/:key", (req, res) => {
-    const key = req.params.key;
+    // const key = req.params.key;
+    // let bytes = cryptoJs.AES.decrypt(key, 'my-secret-key@123');
+    // console.log(bytes.toString(cryptoJs.enc.Utf8));
+    // res.render('test', { studentId: JSON.stringify(req.params.id), key: JSON.stringify(bytes.toString(cryptoJs.enc.Utf8)) });
+    let key = req.params.key;
+    key = key.replace(/@/g, '/')
     let bytes = cryptoJs.AES.decrypt(key, 'my-secret-key@123');
     console.log(bytes.toString(cryptoJs.enc.Utf8));
     res.render('test', { studentId: JSON.stringify(req.params.id), key: JSON.stringify(bytes.toString(cryptoJs.enc.Utf8)) });
+
 })
 
 
