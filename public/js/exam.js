@@ -44,7 +44,7 @@ function detects(studentId, key, database, getDatabase, ref, onValue, set) {
                 const okContent = document.createElement('div');
                 okContent.id = "ok-content";
                 okContent.innerHTML = `<p>Please go full Screen</p>
-            <button id="ok">OK</button>`;
+                <button type="button" class="btn btn-warning" id="ok">OK</button>`;
                 fullScreen.appendChild(okContent);
                 document.getElementById("test-Interface").appendChild(fullScreen);
                 document.getElementById("ok").addEventListener('click', hideChecker)

@@ -92,6 +92,7 @@ app.get("/Test/:id/:key", (req, res) => {
     let bytes = cryptoJs.AES.decrypt(key, 'my-secret-key@123');
     console.log(bytes.toString(cryptoJs.enc.Utf8));
     res.render('test', { studentId: JSON.stringify(req.params.id), key: JSON.stringify(bytes.toString(cryptoJs.enc.Utf8)) });
+
 })
 
 
