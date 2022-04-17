@@ -40,15 +40,14 @@ app.post("/post", (req, res) => {
 })
 
 app.post("/compare", (req, res) => {
-    let picture = req.body.picture;
-    let pic = req.body.pic;
+    let picture = req.body.webcamPic;
+    let pic = req.body.databasePic;
+    console.log(pic)
+    dataURLtoFile(picture, "img1.jpg");
+    dataURLtoFile(pic, "img2.jpg")
 
 
-    dataURLtoFile(picture, 'test.jpg');
-    dataURLtoFile(pic, 'testURL.jpg');
-
-
-    const childPython = spawn('python', ['main.py', "test.jpg", "testURL.jpg"]);
+    const childPython = spawn('python', ['main.py']);
 
     childPython.stdout.on('data', (data) => {
         res.status(200).json({ data: `${data}` });
@@ -84,15 +83,12 @@ app.post("/detect", (req, res) => {
 
 app.get("/face/:key", (req, res) => {
     const key = req.params.key;
-    let bytes = cryptoJs.AES.decrypt(key, 'my-secret-key@123');
-    console.log(bytes.toString(cryptoJs.enc.Utf8));
     res.render('face', { ref: JSON.stringify(refs), key: JSON.stringify(key) })
 })
 
-
-
 app.get("/Test/:id/:key", (req, res) => {
-    const key = req.params.key;
+    let key = req.params.key;
+    key = key.replace(/@/g, '/')
     let bytes = cryptoJs.AES.decrypt(key, 'my-secret-key@123');
     console.log(bytes.toString(cryptoJs.enc.Utf8));
     res.render('test', { studentId: JSON.stringify(req.params.id), key: JSON.stringify(bytes.toString(cryptoJs.enc.Utf8)) });

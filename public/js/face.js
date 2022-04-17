@@ -21,7 +21,28 @@ function Start(app, database, getDatabase, ref, onValue, set, refs, key) {
     });
 
 
-    // webcam.start().then(res => {
+
+    webcam.start().then(res => {
+        document.getElementById("snap").addEventListener('click', e => {
+
+            webcamPic = webcam.snap();
+            console.log(webcamPic);
+            alert("Photo taken");
+            fetch("http://localhost:4000/compare", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                    // 'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: JSON.stringify({ webcamPic, databasePic })
+            }).then(res => res.json())
+                .then(data => {
+                    alert(data.data)
+                })
+        });
+    })
+
+
     //     document.getElementById("snap").addEventListener('click', (e) => {
 
     //         setTimeout(() => {

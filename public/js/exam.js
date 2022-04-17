@@ -21,7 +21,8 @@ function beginTest(studentId, key, database, getDatabase, ref, onValue, set) {
 }
 
 function detects(studentId, key, database, getDatabase, ref, onValue, set) {
-    //FullScreen interval
+    // FullScreen interval
+
     setInterval(() => {
         if (window.innerHeight == screen.height) {
         } else {
