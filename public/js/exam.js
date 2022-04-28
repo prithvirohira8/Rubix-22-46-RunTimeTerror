@@ -70,6 +70,19 @@ function detects(studentId, key, database, getDatabase, ref, onValue, set) {
             })
         }
     });
+
+    //Check if terminated
+    setInterval(() => {
+        let refStr = 'Students/' + studentId + '/Tests/' + code;
+        let term = 0;
+        onValue(ref(database, refStr), (snap) => {
+            term = snap.val().terminate
+        })
+        if (term == 1) {
+            let str = `http://localhost:3000`;
+            window.location.href = str;
+        }
+    }, 1000);
 }
 
 function startWebcam() {
@@ -91,6 +104,12 @@ function startWebcam() {
         let time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
         document.getElementById("time").innerHTML = time;
     }, 1000);
+
+    document.getElementById('endTest').addEventListener('click', e => {
+        let str = `http://localhost:3000`;
+        window.location.href = str;
+    })
+
 }
 
 function hideChecker() {
