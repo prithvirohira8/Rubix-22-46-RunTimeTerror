@@ -24,6 +24,32 @@ export default function Proctor() {
     const [studentsArray, setArray] = useState([]);
     const [cardLoading, setLoading] = useState(false);
 
+    const terminate = (id) => {
+        alert(id)
+        let newKey = key.replaceAll('/', '@')
+        const newRef = firebase.database().ref('Students/' + id + '/Tests/' + newKey);
+        newRef.on('value', (snap) => {
+            let readfs = 0;
+            let readts = 0;
+            let term = 0;
+            console.log(snap.val());
+            readts = snap.val().tabs_changed;
+            readfs = snap.val().fullScreen;
+            term = 1
+            try {
+                newRef.set({
+                    fullScreen: readfs,
+                    tabs_changed: readts,
+                    terminate: 1
+                })
+            } catch (e) {
+                console.log(e);
+            }
+
+
+        });
+    }
+
     React.useEffect(() => {
         var bytes = CryptoJS.AES.decrypt(key, 'my-secret-key@123');
         var url = bytes.toString(CryptoJS.enc.Utf8);
@@ -46,20 +72,28 @@ export default function Proctor() {
                     const data = snapshot.val();
                     let obj = {
                         "name": data.Student_Name,
-                        "photo": data.Photo
+                        "photo": data.Photo,
+                        "id": element
                     }
                     let newKey = key.replaceAll('/', '@')
                     const newRef = firebase.database().ref('Students/' + element + '/Tests/' + newKey);
                     newRef.on('value', (snap) => {
                         const newData = snap.val();
-                        console.log(newData)
+                        // console.log(newData)
                         obj = { ...obj, "fullScreen": newData.fullScreen, "tabSwitch": newData.tabs_changed }
                         setArray(arr => {
                             if (arr.length == Limit) {
+                                console.log("Entered here ")
+                                let flag = 0;
                                 for (let i = 0; i < arr.length; i++) {
-                                    if (arr[i]["name"] == obj["name"]) {
+                                    if (arr[i]["id"] == obj["id"]) {
                                         arr[i] = obj;
+                                        flag = 1;
+                                        break;
                                     }
+                                }
+                                if (flag == 0) {
+                                    return [...arr, obj];
                                 }
                                 return [...arr]
                             }
@@ -103,7 +137,7 @@ export default function Proctor() {
                                     </CardContent>
                                     <CardActions>
                                         <Button size="small">Warn</Button>
-                                        <Button size="small">Terminate</Button>
+                                        <Button size="small" onClick={() => { terminate(val["id"]) }}>Terminate</Button>
                                     </CardActions>
                                 </Card>
 

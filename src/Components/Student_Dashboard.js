@@ -120,7 +120,8 @@ export default function Student_Dashboard() {
         var test_details = firebase.database().ref('Students/' + currentUser.uid + '/Tests/' + examdetails.test_key);
         const student_test_data = {
             fullScreen: 0,
-            tabs_changed: 0
+            tabs_changed: 0,
+            terminate: 0
         }
         test_details.set(student_test_data)
         registerStudents();

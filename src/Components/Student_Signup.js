@@ -30,13 +30,12 @@ export default function Sttudent_Signup() {
     const [loading, setLoading] = useState(false);
     const { signup } = useAuth();
     const [task, setTask] = useState(false);
-    const [Show_webcam, setShow_webcam] = useState(false);
+    const [Show_webcam, setShow_webcam] = useState(true);
     const webRef = useRef(null);
-    const [user_pic,setUser_pic] = useState();
+    const [user_pic, setUser_pic] = useState();
     const history = useHistory();
 
     const snapshot = () => {
-        setShow_webcam(true);
         setTimeout(() => {
             console.log(webRef.current.getScreenshot())
             console.log(webRef.current)
