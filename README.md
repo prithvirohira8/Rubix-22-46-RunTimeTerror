@@ -6,11 +6,12 @@
 ### Table of contents
 | Title                           |
 | ------------------------------- |
-| About                           |
-| Why Invigilate                  |
-| Demonstration                   |
-| Architecture and Implementation |
-| How to clone the repository     |    
+| [About]("README.md#about")                           |
+| [Why Invigilate]("README.md#why-invigilate")                  |
+| [Demonstration]("README.md#demonstration")                   |
+| [Architecture and Implementation]("README.md#project-architecture-and-implementaion-details") |
+|[Tech stacks used]("README.md#tech-stacks-used")|
+| [How to clone the repository]("README.md#how-to-clone-the-repository")     | 
 
 ### About
 - The application allows organizations (schools and colleges) to conduct their examinations on the platform using google forms.
